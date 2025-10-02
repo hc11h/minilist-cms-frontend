@@ -49,7 +49,7 @@ const api = {
 
   async updateAuthor(id: string, input: UpdateAuthorInput): Promise<Author> {
     const res = await fetch(`${BASE_URL}/${id}`, {
-      method: "PATCH",
+      method: "PUT",
       headers: await getAuthHeaders(),
       body: JSON.stringify(input),
     })
