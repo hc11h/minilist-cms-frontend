@@ -17,9 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useDocuments } from "@/hooks/use-documents"
+import { useDocuments } from "@/hooks/useDocuments"
 import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
+
 
 export default function EditorDashboard() {
   const { documents, isLoading, deleteDocument } = useDocuments()
@@ -69,7 +69,7 @@ export default function EditorDashboard() {
         {/* Header */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground">Documents</h1>
+            <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground">Editor</h1>
             <p className="mt-2 text-muted-foreground">Manage and edit your content</p>
           </div>
           <Button asChild size="lg" className="gap-2">
@@ -151,9 +151,9 @@ export default function EditorDashboard() {
                         {formatDate(doc.updatedAt)}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary" className="shrink-0">
+                    {/* <Badge variant="secondary" className="shrink-0">
                       {doc.status}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </CardHeader>
                 <CardContent>

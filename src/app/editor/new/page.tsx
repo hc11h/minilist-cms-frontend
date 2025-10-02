@@ -2,27 +2,67 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeftIcon, SaveIcon } from "@/components/icons"
 import Link from "next/link"
+import { toast } from "sonner"
+
+import { useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import TiptapLink from "@tiptap/extension-link"
+import Image from "@tiptap/extension-image"
+import { ArrowLeftIcon, SaveIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useCreateDocument } from "@/hooks/use-documents"
-import { toast } from "sonner"
+import { useCreateDocument } from "@/hooks/useDocuments"
+import RichTextEditor from "@/components/RichTextEditor"
+import './style.scss'
 
 export default function NewDocument() {
   const router = useRouter()
   const { createDocument, isCreating } = useCreateDocument()
+
   const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [status, setStatus] = useState<"draft" | "published">("draft")
+
+
+  const editor = useEditor({
+  extensions: [
+    StarterKit,
+    TiptapLink.configure({
+      openOnClick: false,
+      HTMLAttributes: {
+        class: 'text-blue-600 underline underline-offset-4',
+      },
+    }),
+    Image.configure({
+      HTMLAttributes: {
+        class: 'max-w-full h-auto rounded-lg',
+      },
+    }),
+  ],
+  content: "",
+  editorProps: {
+    attributes: {
+      class: "tiptap focus:outline-none min-h-[500px] p-6",
+    },
+  },
+  autofocus: true,
+
+  // ✅ This is the fix
+  immediatelyRender: false,
+})
+
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast.error("Title required",{
+      toast.error("Title required", {
         description: "Please enter a title for your document.",
+      })
+      return
+    }
+
+    if (!editor) {
+      toast.error("Editor not ready", {
+        description: "Please wait for the editor to load.",
       })
       return
     }
@@ -30,20 +70,18 @@ export default function NewDocument() {
     try {
       const newDoc = await createDocument({
         name: title.trim(),
-        content: content.trim(),
-        status,
+        content: editor.getHTML(),
       })
 
-     toast.success("Changes saved", {
-  description: "Your document has been successfully updated.",
-})
-
+      toast.success("Changes saved", {
+        description: "Your document has been successfully created.",
+      })
 
       router.push(`/editor/${newDoc.id}`)
-    } catch  {
+    } catch {
       toast.error("Error", {
-  description: "Failed to save changes. Please try again.",
-})
+        description: "Failed to save changes. Please try again.",
+      })
     }
   }
 
@@ -69,7 +107,7 @@ export default function NewDocument() {
           </Button>
         </div>
 
-        {/* Editor Form */}
+        {/* Form */}
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
@@ -83,30 +121,9 @@ export default function NewDocument() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={(value: "draft" | "published") => setStatus(value)}>
-              <SelectTrigger id="status" className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+         
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              placeholder="Start writing your content..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-[500px] resize-none font-mono text-sm"
-            />
-            <p className="text-xs text-muted-foreground">Supports Markdown formatting</p>
-          </div>
+          <RichTextEditor editor={editor} />
         </div>
       </div>
     </div>

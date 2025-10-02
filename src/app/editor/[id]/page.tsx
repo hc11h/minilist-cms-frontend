@@ -1,67 +1,144 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { ArrowLeftIcon, SaveIcon, LoaderIcon } from "@/components/icons"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useDocument, useUpdateDocument } from "@/hooks/use-documents"
+import { useDocument, useUpdateDocument } from "@/hooks/useDocuments"
 import { toast } from "sonner"
+import { useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import TiptapLink from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
+import Link from "next/link"
+import './style.scss'
+import RichTextEditor from "@/components/RichTextEditor"
 
-export default function EditDocument({ params }: { params: { id: string } }) {
 
-  const { document, isLoading, error } = useDocument(params.id)
-  const { updateDocument, isUpdating } = useUpdateDocument()
+function EditorForm({ 
+  document, 
+  onSave, 
+  isUpdating 
+}: {
+  document: { name: string; content: string } | null,
+  onSave: (title: string, content: string) => Promise<void>,
+  isUpdating: boolean
+}) {
   const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [status, setStatus] = useState<"draft" | "published">("draft")
   const [hasChanges, setHasChanges] = useState(false)
+  
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TiptapLink.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 underline underline-offset-4',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg',
+        },
+      }),
+    ],
+    content: '',
+    editorProps: {
+      attributes: {
+        class: 'tiptap focus:outline-none min-h-[500px] p-6',
+      },
+    },
+    onUpdate: ({ editor }) => {
+      if (document) {
+        const changed = title !== document.name || editor.getHTML() !== document.content
+        setHasChanges(changed)
+      }
+    },
+    immediatelyRender: false,
+  })
 
-  // Initialize form with document data
   useEffect(() => {
-    if (document) {
+    if (document && editor) {
       setTitle(document.name)
-      setContent(document.content)
-      setStatus(document.status)
+      editor.commands.setContent(document.content)
     }
-  }, [document])
+  }, [document, editor])
 
-  // Track changes
   useEffect(() => {
-    if (document) {
-      const changed = title !== document.name || content !== document.content || status !== document.status
+    if (document && editor) {
+      const changed = title !== document.name || editor.getHTML() !== document.content
       setHasChanges(changed)
     }
-  }, [title, content, status, document])
+  }, [title, document, editor])
 
   const handleSave = async () => {
     if (!title.trim()) {
-       toast.error("Title required", {
-      description: "Please enter a title for your document.",
-    })
+      toast.error("Title required", {
+        description: "Please enter a title for your document.",
+      })
       return
     }
-
-    try {
-      await updateDocument(params.id, {
-        name: title.trim(),
-        content: content.trim(),
-        status,
+    if (!editor) {
+      toast.error("Editor not ready", {
+        description: "Please wait for the editor to load.",
       })
+      return
+    }
+    await onSave(title.trim(), editor.getHTML())
+    setHasChanges(false)
+  }
 
-    toast.success("Changes saved", {
-  description: "Your document has been successfully updated.",
-})
+  return (
+    <>
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {hasChanges ? "You have unsaved changes" : "All changes saved"}
+        </p>
+        <Button 
+          onClick={handleSave} 
+          disabled={isUpdating || !hasChanges} 
+          size="lg" 
+          className="gap-2"
+        >
+          <SaveIcon className="h-4 w-4" />
+          {isUpdating ? "Saving..." : "Save Changes"}
+        </Button>
+      </div>
+      
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="title">Document Title</Label>
+          <Input
+            id="title"
+            placeholder="Enter document title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="text-lg font-semibold"
+          />
+        </div>
 
-      setHasChanges(false)
-    } catch  {
-      toast.success("Changes saved", {
-  description: "Your document has been successfully updated.",
-})
+       <RichTextEditor editor={editor} />
+      </div>
+    </>
+  )
+}
 
+export default function EditDocument({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { document, isLoading, error } = useDocument(id)
+  const { updateDocument, isUpdating } = useUpdateDocument()
+
+  const handleSave = async (title: string, content: string) => {
+    try {
+      await updateDocument(id, { name: title, content })
+      toast.success("Changes saved", { 
+        description: "Your document has been successfully updated." 
+      })
+    } catch {
+      toast.error("Failed to save", { 
+        description: "There was an error saving your document." 
+      })
     }
   }
 
@@ -75,13 +152,15 @@ export default function EditDocument({ params }: { params: { id: string } }) {
       </div>
     )
   }
-
+  
   if (error || !document) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <h2 className="mb-2 text-2xl font-bold">Document not found</h2>
-          <p className="mb-6 text-muted-foreground">The document you're looking for doesn't exist.</p>
+          <p className="mb-6 text-muted-foreground">
+            The document you're looking for doesn't exist or may have been deleted.
+          </p>
           <Button asChild>
             <Link href="/editor">Back to Documents</Link>
           </Button>
@@ -89,69 +168,31 @@ export default function EditDocument({ params }: { params: { id: string } }) {
       </div>
     )
   }
-
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/editor">
-                <ArrowLeftIcon className="h-4 w-4" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground">Edit Document</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {hasChanges ? "Unsaved changes" : "All changes saved"}
-              </p>
-            </div>
-          </div>
-          <Button onClick={handleSave} disabled={isUpdating || !hasChanges} size="lg" className="gap-2">
-            <SaveIcon className="h-4 w-4" />
-            {isUpdating ? "Saving..." : "Save"}
+        <div className="mb-8 flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/editor">
+              <ArrowLeftIcon className="h-4 w-4" />
+            </Link>
           </Button>
-        </div>
-
-        {/* Editor Form */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Enter document title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-lg"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={(value: "draft" | "published") => setStatus(value)}>
-              <SelectTrigger id="status" className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              placeholder="Start writing your content..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-[500px] resize-none font-mono text-sm"
-            />
-            <p className="text-xs text-muted-foreground">Supports Markdown formatting</p>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Edit Document
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Make changes to your document below
+            </p>
           </div>
         </div>
+        
+        <EditorForm 
+          document={document} 
+          onSave={handleSave} 
+          isUpdating={isUpdating} 
+        />
       </div>
     </div>
   )

@@ -7,7 +7,6 @@ export interface Document {
   id: string
   name: string
   content: string
-  status: "draft" | "published"
   createdAt: string
   updatedAt: string
 }
@@ -77,11 +76,7 @@ export function useDocuments() {
       try {
         setIsLoading(true)
         const data = await api.getDocuments()
-         const mappedDocuments = data.map(doc => ({
-          ...doc,
-          title: doc.name || "Untitled",
-        }))
-        setDocuments(mappedDocuments)
+        setDocuments(data)
         setError(null)
       } catch (err) {
         setError(err as Error)
