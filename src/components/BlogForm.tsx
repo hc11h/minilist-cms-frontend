@@ -27,7 +27,7 @@ export interface BlogFormData {
   title: string
   slug: string
   editorId: string
-  authorId: string
+  blogAuthorId: string
   status: BlogStatus
   scheduledAt?: string
   seoTitle?: string
@@ -44,7 +44,7 @@ export function BlogForm({ mode, initialValues, onSubmit, isSubmitting }: BlogFo
     title: initialValues?.title || "",
     slug: initialValues?.slug || "",
     editorId: initialValues?.editorId || "",
-    authorId: initialValues?.authorId || "",
+    blogAuthorId: initialValues?.blogAuthorId || "",
     status: initialValues?.status || "DRAFT",
     scheduledAt: initialValues?.scheduledAt || "",
     seoTitle: initialValues?.seoTitle || "",
@@ -71,7 +71,7 @@ export function BlogForm({ mode, initialValues, onSubmit, isSubmitting }: BlogFo
     if (!formData.title.trim()) newErrors.title = "Title is required"
     if (!formData.slug.trim()) newErrors.slug = "Slug is required"
     if (!formData.editorId) newErrors.editorId = "Editor is required"
-    if (!formData.authorId) newErrors.authorId = "Author is required"
+    if (!formData.blogAuthorId) newErrors.blogAuthorId = "Author is required"
     if (formData.status === "SCHEDULED" && !formData.scheduledAt) {
       newErrors.scheduledAt = "Scheduled date is required for scheduled blogs"
     }
@@ -199,8 +199,8 @@ export function BlogForm({ mode, initialValues, onSubmit, isSubmitting }: BlogFo
               <Label htmlFor="authorId">
                 Author <span className="text-destructive">*</span>
               </Label>
-              <Select value={formData.authorId} onValueChange={(value) => handleChange("authorId", value)}>
-                <SelectTrigger id="authorId" className={errors.authorId ? "border-destructive" : ""}>
+              <Select value={formData.blogAuthorId} onValueChange={(value) => handleChange("blogAuthorId", value)}>
+                <SelectTrigger id="authorId" className={errors.blogAuthorId ? "border-destructive" : ""}>
                   <SelectValue placeholder="Select author" />
                 </SelectTrigger>
                 <SelectContent>
@@ -221,7 +221,7 @@ export function BlogForm({ mode, initialValues, onSubmit, isSubmitting }: BlogFo
                   )}
                 </SelectContent>
               </Select>
-              {errors.authorId && <p className="text-sm text-destructive">{errors.authorId}</p>}
+              {errors.blogAuthorId && <p className="text-sm text-destructive">{errors.blogAuthorId}</p>}
             </div>
           </div>
         </CardContent>

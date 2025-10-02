@@ -10,7 +10,7 @@ export interface Blog {
   title: string
   slug: string
   editorId: string
-  authorId: string
+  blogAuthorId: string
   status: BlogStatus
   scheduledAt?: string
   seoTitle?: string
@@ -137,11 +137,11 @@ export function useCreateBlog() {
   const createBlog = async (input: CreateBlogInput): Promise<Blog> => {
   setIsCreating(true)
   try {
-    const { authorId, ...rest } = input
+    const { blogAuthorId, ...rest } = input
 
     const payload = {
       ...rest,
-      blogAuthorId: authorId, // ✅ map authorId → blogAuthorId
+      blogAuthorId: blogAuthorId, // ✅ map authorId → blogAuthorId
       scheduledAt: input.scheduledAt?.trim()
         ? new Date(input.scheduledAt).toISOString()
         : undefined, // ✅ ensure valid ISO or skip

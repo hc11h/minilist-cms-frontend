@@ -5,15 +5,17 @@ import { BlogForm, type BlogFormData } from "@/components/BlogForm"
 import { useBlog, useUpdateBlog } from "@/hooks/useBlog"
 import { toast } from "sonner"
 import { LoaderIcon } from "@/components/icons"
+import React from "react"
 
-export default function EditBlogPage({ params }: { params: { id: string } }) {
+export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const { blog, isLoading } = useBlog(params.id)
+  const unwrappedParams = React.use(params)
+  const { blog, isLoading } = useBlog(unwrappedParams.id)
   const { updateBlog, isUpdating } = useUpdateBlog()
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
-      await updateBlog(params.id, data)
+      await updateBlog(unwrappedParams.id, data)
       toast.success("Blog updated successfully", {
         description: "Your changes have been saved.",
       })
