@@ -1,41 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { ArrowLeftIcon, SaveIcon, LoaderIcon } from "@/components/icons"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { ArrowLeftIcon, SaveIcon } from "@/components/icons"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useDocument, useUpdateDocument } from "@/hooks/use-documents"
+import { useCreateDocument } from "@/hooks/use-documents"
 import { toast } from "sonner"
 
-export default function EditDocument({ params }: { params: { id: string } }) {
-
-  const { document, isLoading, error } = useDocument(params.id)
-  const { updateDocument, isUpdating } = useUpdateDocument()
+export default function NewDocument() {
+  const router = useRouter()
+  const { createDocument, isCreating } = useCreateDocument()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [status, setStatus] = useState<"draft" | "published">("draft")
-  const [hasChanges, setHasChanges] = useState(false)
-
-  // Initialize form with document data
-  useEffect(() => {
-    if (document) {
-      setTitle(document.title)
-      setContent(document.content)
-      setStatus(document.status)
-    }
-  }, [document])
-
-  // Track changes
-  useEffect(() => {
-    if (document) {
-      const changed = title !== document.title || content !== document.content || status !== document.status
-      setHasChanges(changed)
-    }
-  }, [title, content, status, document])
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -48,50 +30,25 @@ export default function EditDocument({ params }: { params: { id: string } }) {
     }
 
     try {
-      await updateDocument(params.id, {
+      const newDoc = await createDocument({
         title: title.trim(),
         content: content.trim(),
         status,
       })
 
       toast({
-        title: "Changes saved",
-        description: "Your document has been successfully updated.",
+        title: "Document created",
+        description: "Your document has been successfully created.",
       })
 
-      setHasChanges(false)
+      router.push(`/editor/${newDoc.id}`)
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to save changes. Please try again.",
+        description: "Failed to create document. Please try again.",
         variant: "destructive",
       })
     }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <LoaderIcon className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Loading document...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !document) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <h2 className="mb-2 text-2xl font-bold">Document not found</h2>
-          <p className="mb-6 text-muted-foreground">The document you're looking for doesn't exist.</p>
-          <Button asChild>
-            <Link href="/editor">Back to Documents</Link>
-          </Button>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -106,15 +63,13 @@ export default function EditDocument({ params }: { params: { id: string } }) {
               </Link>
             </Button>
             <div>
-              <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground">Edit Document</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {hasChanges ? "Unsaved changes" : "All changes saved"}
-              </p>
+              <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground">New Document</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Create a new document</p>
             </div>
           </div>
-          <Button onClick={handleSave} disabled={isUpdating || !hasChanges} size="lg" className="gap-2">
+          <Button onClick={handleSave} disabled={isCreating} size="lg" className="gap-2">
             <SaveIcon className="h-4 w-4" />
-            {isUpdating ? "Saving..." : "Save"}
+            {isCreating ? "Saving..." : "Save"}
           </Button>
         </div>
 
@@ -128,6 +83,7 @@ export default function EditDocument({ params }: { params: { id: string } }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-lg"
+              autoFocus
             />
           </div>
 
