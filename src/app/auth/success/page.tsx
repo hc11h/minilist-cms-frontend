@@ -11,16 +11,9 @@ export default function GoogleAuthSuccess() {
     const token = params.get("token");
 
     if (token) {
-      // Store token in sessionStorage (or localStorage if you prefer)
       sessionStorage.setItem("authToken", token);
-
-      // Optional: decode JWT to get user info if needed
-      // const payload = JSON.parse(atob(token.split('.')[1]));
-
-      // Redirect to dashboard
       router.replace("/dashboard");
     } else {
-      // If no token, redirect back to login
       router.replace("/login");
     }
   }, [router]);
