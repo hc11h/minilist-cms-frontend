@@ -1,49 +1,194 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
+  useApiKeyStatus,
+  useGenerateApiKey,
+  useDeactivateApiKey,
+} from "@/hooks/useApiKey"
+import { toast } from "sonner"
+import { KeyIcon, CopyIcon } from "@/components/icons"
+
 export default function ApiKeysPage() {
-    return (
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
-          <p className="mt-1 text-gray-600">Manage your API keys for accessing the CMS</p>
-        </div>
-  
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-medium text-gray-900">Your API Keys</h2>
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Create New Key
-              </button>
-            </div>
-  
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Key</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {['Web App', 'Mobile App', 'Integration'].map((name, index) => (
-                    <tr key={index}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{name}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">sk_...{Math.floor(Math.random() * 10000)}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Jan {10 + index}, 2023</td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <button className="text-indigo-600 hover:text-indigo-900 mr-4">Regenerate</button>
-                        <button className="text-red-600 hover:text-red-900">Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const { status, isLoading, refetch } = useApiKeyStatus()
+  const { generateApiKey, isGenerating, newKey } = useGenerateApiKey()
+  const { deactivateApiKey, isDeactivating } = useDeactivateApiKey()
+
+  const [showKey, setShowKey] = useState(false)
+  const [showDeactivateDialog, setShowDeactivateDialog] = useState(false)
+
+  const handleGenerate = async () => {
+    try {
+      await generateApiKey()
+      setShowKey(true)
+      await refetch()
+      toast.success("API key generated", {
+        description: "Please copy and save your API key now — you won't see it again.",
+      })
+    } catch  {
+      toast.error("API key generation failed", {
+        description:  "Something went wrong.",
+      })
+    }
   }
+
+  const handleDeactivate = async () => {
+    try {
+      await deactivateApiKey()
+      await refetch()
+      setShowDeactivateDialog(false)
+      toast.success("API key deactivated", {
+        description: "Your key is now inactive.",
+      })
+    } catch  {
+      toast.error("Deactivation failed", {
+        description: "Something went wrong.",
+      })
+    }
+  }
+
+  const handleCopy = () => {
+    const keyToCopy = newKey
+    if (keyToCopy) {
+      navigator.clipboard.writeText(keyToCopy)
+      toast.success("API key copied to clipboard")
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground">API Key Management</h1>
+          <p className="mt-2 text-muted-foreground">
+            Generate and manage your API key for accessing the Minilist CMS API.
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <KeyIcon className="h-5 w-5" />
+                  Your API Key
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  {status?.active
+                    ? "Your API key is active and ready to use"
+                    : "No active API key found"}
+                </CardDescription>
+              </div>
+              {status && (
+                <Badge variant={status.active ? "default" : "secondary"}>
+                  {status.active ? "Active" : "Inactive"}
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {isLoading ? (
+              <div className="space-y-4">
+                <div className="h-10 w-full animate-pulse rounded bg-muted" />
+              </div>
+            ) : status?.active ? (
+              <>
+                {newKey && (
+                  <Alert className="border-amber-500/50 bg-amber-500/10">
+                    <CopyIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    <AlertDescription className="text-amber-900 dark:text-amber-100">
+                      <strong>Important:</strong> This key is shown only once. Copy and save it securely.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {newKey && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">API Key</label>
+                    <div className="flex gap-2">
+                      <Input
+                        readOnly
+                        value={showKey ? newKey : "••••••••••••••••••••••••••••••••"}
+                        className="font-mono pr-10"
+                      />
+                      <Button onClick={handleCopy} variant="outline" size="icon">
+                        <CopyIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowDeactivateDialog(true)}
+                    disabled={isDeactivating}
+                  >
+                    {isDeactivating ? "Deactivating..." : "Deactivate Key"}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <KeyIcon className="mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-semibold">No API key found</h3>
+                <p className="mb-6 text-sm text-muted-foreground">
+                  Click below to generate a new API key
+                </p>
+                <Button onClick={handleGenerate} disabled={isGenerating} size="lg">
+                  {isGenerating ? "Generating..." : "Generate API Key"}
+                </Button>
+              </div>
+            )}
+
+            <div className="rounded-lg border bg-muted/50 p-4">
+              <h4 className="mb-2 text-sm font-semibold">Usage Instructions</h4>
+              <p className="mb-3 text-sm text-muted-foreground">
+                Add this key to your request headers:
+              </p>
+              <code className="block rounded bg-background p-3 text-xs font-mono">
+                Authorization: Bearer YOUR_API_KEY
+              </code>
+            </div>
+          </CardContent>
+        </Card>
+
+        <AlertDialog open={showDeactivateDialog} onOpenChange={setShowDeactivateDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Deactivate your API key?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will revoke access for any integrations using this key. You can generate a new one later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeactivate}
+                className="bg-destructive text-white-foreground hover:bg-destructive/90"
+              >
+                Deactivate
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </div>
+  )
+}
