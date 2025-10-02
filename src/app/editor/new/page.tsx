@@ -21,10 +21,8 @@ export default function NewDocument() {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast({
-        title: "Title required",
+      toast.error("Title required",{
         description: "Please enter a title for your document.",
-        variant: "destructive",
       })
       return
     }
@@ -36,18 +34,16 @@ export default function NewDocument() {
         status,
       })
 
-      toast({
-        title: "Document created",
-        description: "Your document has been successfully created.",
-      })
+     toast.success("Changes saved", {
+  description: "Your document has been successfully updated.",
+})
+
 
       router.push(`/editor/${newDoc.id}`)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create document. Please try again.",
-        variant: "destructive",
-      })
+    } catch  {
+      toast.error("Error", {
+  description: "Failed to save changes. Please try again.",
+})
     }
   }
 

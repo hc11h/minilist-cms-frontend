@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useDocuments } from "@/hooks/use-documents"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 
 export default function EditorDashboard() {
@@ -42,15 +42,13 @@ export default function EditorDashboard() {
 
     try {
       await deleteDocument(deleteId)
-      toast({
-        title: "Document deleted",
+      toast("Document deleted",{
         description: "The document has been successfully deleted.",
       })
-    } catch (error) {
-      toast({
-        title: "Error",
+    } catch {
+      toast("Error",{
+  
         description: "Failed to delete document. Please try again.",
-        variant: "destructive",
       })
     } finally {
       setDeleteId(null)
