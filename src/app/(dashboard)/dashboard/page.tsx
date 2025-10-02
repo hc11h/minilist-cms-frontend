@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    // Prevent double fetching
+
     if (hasFetched.current) return;
     hasFetched.current = true;
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
     fetchUser();
   }, [router]);
 
-  // Loading state with spinner
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -53,7 +53,7 @@ export default function DashboardPage() {
     );
   }
 
-  // Error state
+
   if (error) {
     return (
       <div className="max-w-6xl mx-auto mt-20 text-center">
@@ -173,7 +173,7 @@ export default function DashboardPage() {
   );
 }
 
-// Reusable Stat Card Component
+
 const StatCard = ({ title, value, icon, bgColor, iconColor }: {
   title: string;
   value: string;

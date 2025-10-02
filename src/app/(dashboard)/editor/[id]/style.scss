@@ -1,0 +1,234 @@
+/* TipTap Editor Styles */
+.tiptap {
+  outline: none;
+  
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  /* Lists - FIXED for proper bullet/number display */
+  ul, ol {
+    padding-left: 2rem;
+    margin-left: 0;
+    list-style-position: outside;
+  }
+
+  ul {
+    list-style-type: disc;
+    
+    li {
+      display: list-item;
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+    
+    li {
+      display: list-item;
+    }
+  }
+
+  /* Nested lists */
+  ul ul {
+    list-style-type: circle;
+  }
+
+  ul ul ul {
+    list-style-type: square;
+  }
+
+  /* Paragraphs */
+  p {
+    line-height: 1.7;
+    margin: 0.75em 0;
+    
+    &:first-child {
+      margin-top: 0;
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Links */
+  a {
+    font-weight: 500;
+    color: #3182ce;
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+    cursor: pointer;
+    
+    &:hover {
+      color: #2c5aa0;
+    }
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 2.5rem;
+    margin: 1.5rem 0 1rem 0;
+    
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 2.25rem;
+    margin: 1.25rem 0 0.75rem 0;
+    
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.025rem;
+    margin: 1rem 0 0.5rem 0;
+    
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0.75rem 0 0.5rem 0;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0.75rem 0 0.5rem 0;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.75rem 0 0.5rem 0;
+  }
+
+  /* Inline Code */
+  code {
+    background-color: rgba(97, 97, 97, 0.1);
+    color: #616161;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    font-family: 'JetBrainsMono', 'Courier New', Courier, monospace;
+  }
+
+  /* Code Blocks */
+  pre {
+    background: #0d0d0d;
+    color: #fff;
+    font-family: 'JetBrainsMono', 'Courier New', Courier, monospace;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+
+    code {
+      color: inherit;
+      padding: 0;
+      background: none;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    padding-left: 1rem;
+    border-left: 3px solid rgba(13, 13, 13, 0.2);
+    margin: 1rem 0;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Horizontal Rule */
+  hr {
+    border: none;
+    border-top: 2px solid rgba(13, 13, 13, 0.1);
+    margin: 2rem 0;
+  }
+
+  /* Bold */
+  strong {
+    font-weight: 700;
+  }
+
+  /* Italic */
+  em {
+    font-style: italic;
+  }
+
+  /* Strike-through */
+  s {
+    text-decoration: line-through;
+  }
+
+  /* Task Lists (if enabled) */
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  /* Placeholder */
+  p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    code {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+    }
+
+    blockquote {
+      border-left-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    hr {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
