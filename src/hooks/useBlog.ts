@@ -30,6 +30,7 @@ const api = {
     const res = await fetch(BASE_URL, {
       method: "GET",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch blogs")
     return res.json()
@@ -39,6 +40,7 @@ const api = {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "GET",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch blog")
     return res.json()
@@ -48,6 +50,7 @@ const api = {
     const res = await fetch(BASE_URL, {
       method: "POST",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to create blog")
@@ -56,8 +59,9 @@ const api = {
 
   async updateBlog(id: string, input: UpdateBlogInput): Promise<Blog> {
     const res = await fetch(`${BASE_URL}/${id}`, {
-      method: "PUT", // ✅ Use PUT (your backend uses @Put)
+      method: "PUT",
       headers: await getAuthHeaders(),
+      credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to update blog")
@@ -68,12 +72,13 @@ const api = {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to delete blog")
   },
 }
 
-// Hook: Get all blogs
+
 export function useBlogs() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -104,7 +109,7 @@ export function useBlogs() {
   return { blogs, isLoading, error, deleteBlog }
 }
 
-// Hook: Get single blog
+
 export function useBlog(id: string) {
   const [blog, setBlog] = useState<Blog | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -130,7 +135,7 @@ export function useBlog(id: string) {
   return { blog, isLoading, error }
 }
 
-// Hook: Create blog
+
 export function useCreateBlog() {
   const [isCreating, setIsCreating] = useState(false)
 
@@ -141,10 +146,10 @@ export function useCreateBlog() {
 
     const payload = {
       ...rest,
-      blogAuthorId: blogAuthorId, // ✅ map authorId → blogAuthorId
+      blogAuthorId: blogAuthorId, 
       scheduledAt: input.scheduledAt?.trim()
         ? new Date(input.scheduledAt).toISOString()
-        : undefined, // ✅ ensure valid ISO or skip
+        : undefined, 
     }
 
     const newBlog = await api.createBlog(payload as never)
@@ -158,7 +163,7 @@ export function useCreateBlog() {
   return { createBlog, isCreating }
 }
 
-// Hook: Update blog
+
 export function useUpdateBlog() {
   const [isUpdating, setIsUpdating] = useState(false)
 

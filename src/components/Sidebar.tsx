@@ -6,11 +6,6 @@ import { cn } from "@/lib/utils"
 import { LayoutDashboardIcon, FileTextIcon, BookOpenIcon, UsersIcon, KeyIcon, HomeIcon } from "@/components/icons"
 
 const navigation = [
-//   {
-//     name: "Home",
-//     href: "/",
-//     icon: HomeIcon,
-//   },
   {
     name: "Dashboard",
     href: "/dashboard",

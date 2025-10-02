@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeftIcon, SaveIcon, LoaderIcon } from "@/components/icons"
 import { toast } from "sonner"
-import { useDocuments } from "@/hooks/useDocuments"
+import { useDocuments } from "@/hooks/useEditor"
 import { useAuthors } from "@/hooks/useAuthor"
 import type { Blog, BlogStatus } from "@/hooks/useBlog"
 
@@ -54,7 +54,6 @@ export function BlogForm({ mode, initialValues, onSubmit, isSubmitting }: BlogFo
 
   const [errors, setErrors] = useState<Partial<Record<keyof BlogFormData, string>>>({})
 
-  // Auto-generate slug from title
   useEffect(() => {
     if (mode === "create" && formData.title && !initialValues?.slug) {
       const slug = formData.title

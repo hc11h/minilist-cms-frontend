@@ -5,7 +5,7 @@ import { ArrowLeftIcon, SaveIcon, LoaderIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useDocument, useUpdateDocument } from "@/hooks/useDocuments"
+import { useDocument, useUpdateDocument } from "@/hooks/useEditor"
 import { toast } from "sonner"
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'

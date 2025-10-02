@@ -6,14 +6,14 @@ import { Suspense } from "react"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 
-// Inter font (UI font)
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 })
 
-// Fira Code font (monospace/code font)
+
 const firaCode = Fira_Code({
   subsets: ["latin"],
   variable: "--font-fira-code",
@@ -21,14 +21,13 @@ const firaCode = Fira_Code({
   display: "swap",
 })
 
-// Metadata
 export const metadata: Metadata = {
   title: "Minilist CMS - Headless Content Management",
   description: "Simple, powerful headless CMS with an API-first approach",
   generator: "v0.app",
 }
 
-// Root layout component
+
 export default function RootLayout({
   children,
 }: Readonly<{

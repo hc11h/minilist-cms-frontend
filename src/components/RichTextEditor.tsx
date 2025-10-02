@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 
 interface RichTextEditorProps {
-  editor: Editor | null; // proper typing from TipTap
+  editor: Editor | null; 
 }
 
 const MenuBar = ({ editor }: { editor: import('@tiptap/react').Editor | null }) => {

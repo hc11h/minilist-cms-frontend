@@ -22,6 +22,7 @@ const api = {
   async getDocuments(): Promise<Document[]> {
     const res = await fetch(`${API_BASE}/editor`, {
        headers: getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch documents")
     return res.json()
@@ -30,6 +31,7 @@ const api = {
   async getDocument(id: string): Promise<Document | null> {
     const res = await fetch(`${API_BASE}/editor/${id}`, {
       headers: getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch document")
     return res.json()
@@ -39,6 +41,7 @@ const api = {
     const res = await fetch(`${API_BASE}/editor`, {
       method: "POST",
        headers: getAuthHeaders(),
+        credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to create document")
@@ -49,6 +52,7 @@ const api = {
     const res = await fetch(`${API_BASE}/editor/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
+       credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to update document")
@@ -59,13 +63,12 @@ const api = {
     const res = await fetch(`${API_BASE}/editor/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to delete document")
   },
 }
 
-
-// Hook: Get all documents
 export function useDocuments() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -96,7 +99,7 @@ export function useDocuments() {
   return { documents, isLoading, error, deleteDocument }
 }
 
-// Hook: Get single document
+
 export function useDocument(id: string) {
   const [document, setDocument] = useState<Document | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -122,7 +125,7 @@ export function useDocument(id: string) {
   return { document, isLoading, error }
 }
 
-// Hook: Create document
+
 export function useCreateDocument() {
   const [isCreating, setIsCreating] = useState(false)
 
@@ -139,7 +142,7 @@ export function useCreateDocument() {
   return { createDocument, isCreating }
 }
 
-// Hook: Update document
+
 export function useUpdateDocument() {
   const [isUpdating, setIsUpdating] = useState(false)
 

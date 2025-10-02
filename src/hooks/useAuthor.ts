@@ -23,6 +23,7 @@ const api = {
     const res = await fetch(BASE_URL, {
       method: "GET",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch authors")
     return res.json()
@@ -32,6 +33,7 @@ const api = {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "GET",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to fetch author")
     return res.json()
@@ -41,6 +43,7 @@ const api = {
     const res = await fetch(BASE_URL, {
       method: "POST",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to create author")
@@ -51,6 +54,7 @@ const api = {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
       body: JSON.stringify(input),
     })
     if (!res.ok) throw new Error("Failed to update author")
@@ -61,12 +65,13 @@ const api = {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
       headers: await getAuthHeaders(),
+       credentials: 'include', 
     })
     if (!res.ok) throw new Error("Failed to delete author")
   },
 }
 
-// Hook: Get all authors
+
 export function useAuthors() {
   const [authors, setAuthors] = useState<Author[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -97,7 +102,7 @@ export function useAuthors() {
   return { authors, isLoading, error, deleteAuthor }
 }
 
-// Hook: Get single author
+
 export function useAuthor(id: string) {
   const [author, setAuthor] = useState<Author | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -123,7 +128,6 @@ export function useAuthor(id: string) {
   return { author, isLoading, error }
 }
 
-// Hook: Create author
 export function useCreateAuthor() {
   const [isCreating, setIsCreating] = useState(false)
 
@@ -140,7 +144,6 @@ export function useCreateAuthor() {
   return { createAuthor, isCreating }
 }
 
-// Hook: Update author
 export function useUpdateAuthor() {
   const [isUpdating, setIsUpdating] = useState(false)
 

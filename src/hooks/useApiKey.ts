@@ -1,4 +1,3 @@
-// src/hooks/useApiKey.ts
 "use client"
 
 import { useState, useEffect } from "react"
@@ -14,7 +13,7 @@ export interface GeneratedApiKey {
   apiKey: string
 }
 
-// Hook: Get API key status
+
 export function useApiKeyStatus() {
   const [status, setStatus] = useState<ApiKeyStatus | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -26,6 +25,7 @@ export function useApiKeyStatus() {
       const res = await fetch(API_BASE, {
         method: "GET",
         headers: getAuthHeaders(),
+         credentials: 'include', 
       })
       if (!res.ok) throw new Error("Failed to fetch API key status")
       const data = await res.json()
@@ -44,7 +44,7 @@ export function useApiKeyStatus() {
   return { status, isLoading, error, refetch: fetchStatus }
 }
 
-// Hook: Generate new API key
+
 export function useGenerateApiKey() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [newKey, setNewKey] = useState<string | null>(null)
@@ -56,6 +56,7 @@ export function useGenerateApiKey() {
       const res = await fetch(API_BASE, {
         method: "POST",
         headers: getAuthHeaders(),
+         credentials: 'include', 
       })
       if (!res.ok) {
         const errorBody = await res.json()
@@ -74,7 +75,7 @@ export function useGenerateApiKey() {
   return { generateApiKey, isGenerating, newKey, error }
 }
 
-// Hook: Deactivate current API key
+
 export function useDeactivateApiKey() {
   const [isDeactivating, setIsDeactivating] = useState(false)
   const [error, setError] = useState<Error | null>(null)
@@ -85,6 +86,7 @@ export function useDeactivateApiKey() {
       const res = await fetch(API_BASE, {
         method: "DELETE",
         headers: getAuthHeaders(),
+         credentials: 'include', 
       })
       if (!res.ok) {
         const errorBody = await res.json()

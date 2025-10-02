@@ -16,11 +16,6 @@ import {
 } from "@/components/icons"
 
 const navigation = [
-  // {
-  //   name: "Home",
-  //   href: "/",
-  //   icon: HomeIcon,
-  // },
   {
     name: "Dashboard",
     href: "/dashboard",

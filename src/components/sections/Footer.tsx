@@ -31,7 +31,6 @@ export function Footer() {
   )
 }
 
-// Component: Footer Column with links
 function FooterColumn({ title, links }: { title: string; links: string[] }) {
   return (
     <div>
@@ -54,7 +53,7 @@ function FooterColumn({ title, links }: { title: string; links: string[] }) {
   )
 }
 
-// Component: Footer single link (socials, etc.)
+
 function FooterLink({ href, label }: { href: string; label: string }) {
   return (
     <Link

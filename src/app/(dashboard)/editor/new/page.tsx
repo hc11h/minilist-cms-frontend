@@ -13,7 +13,7 @@ import { ArrowLeftIcon, SaveIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useCreateDocument } from "@/hooks/useDocuments"
+import { useCreateDocument } from "@/hooks/useEditor"
 import RichTextEditor from "@/components/RichTextEditor"
 import './style.scss'
 
@@ -46,8 +46,6 @@ export default function NewDocument() {
     },
   },
   autofocus: true,
-
-  // ✅ This is the fix
   immediatelyRender: false,
 })
 

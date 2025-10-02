@@ -17,17 +17,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useDocuments } from "@/hooks/useDocuments"
+import { useDocuments } from "@/hooks/useEditor"
 import { toast } from "sonner"
+import { getAuthHeaders } from "@/lib/authHeaders"
 
 
 export default function EditorDashboard() {
+
+  getAuthHeaders();
   const { documents, isLoading, deleteDocument } = useDocuments()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState<"date" | "title">("date")
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Filter and sort documents
+
   const filteredDocuments = documents
     .filter((doc) => doc.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {

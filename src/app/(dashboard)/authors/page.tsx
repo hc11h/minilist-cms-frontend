@@ -25,7 +25,7 @@ export default function AuthorsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Filter authors
+
   const filteredAuthors = authors.filter(
     (author) =>
       author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

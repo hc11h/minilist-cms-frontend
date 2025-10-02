@@ -28,7 +28,7 @@ export default function EditAuthorPage() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Pre-fill form when author data loads
+
   useEffect(() => {
     if (author) {
       setFormData({
@@ -87,7 +87,7 @@ export default function EditAuthorPage() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }))
     }

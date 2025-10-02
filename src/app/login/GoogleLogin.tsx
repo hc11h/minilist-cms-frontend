@@ -39,7 +39,6 @@ export default function GoogleLogin() {
   )
 }
 
-// Google SVG Icon Component
 function GoogleIcon() {
   return (
     <svg
