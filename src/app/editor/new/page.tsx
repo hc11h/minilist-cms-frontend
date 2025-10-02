@@ -29,7 +29,7 @@ export default function NewDocument() {
 
     try {
       const newDoc = await createDocument({
-        title: title.trim(),
+        name: title.trim(),
         content: content.trim(),
         status,
       })

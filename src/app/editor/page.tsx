@@ -29,12 +29,12 @@ export default function EditorDashboard() {
 
   // Filter and sort documents
   const filteredDocuments = documents
-    .filter((doc) => doc.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((doc) => doc.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === "date") {
         return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       }
-      return a.title.localeCompare(b.title)
+      return a.name.localeCompare(b.name)
     })
 
   const handleDelete = async () => {
@@ -145,7 +145,7 @@ export default function EditorDashboard() {
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 space-y-1">
-                      <CardTitle className="line-clamp-1 text-balance">{doc.title}</CardTitle>
+                      <CardTitle className="line-clamp-1 text-balance">{doc.name}</CardTitle>
                       <CardDescription className="flex items-center gap-1 text-xs">
                         <CalendarIcon className="h-3 w-3" />
                         {formatDate(doc.updatedAt)}

@@ -4,5 +4,6 @@ export function getAuthHeaders(extraHeaders: HeadersInit = {}): HeadersInit {
   return {
     ...extraHeaders,
     Authorization: token ? `Bearer ${token}` : "",
+    "Content-Type": "application/json",
   };
 }

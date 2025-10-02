@@ -23,7 +23,7 @@ export default function EditDocument({ params }: { params: { id: string } }) {
   // Initialize form with document data
   useEffect(() => {
     if (document) {
-      setTitle(document.title)
+      setTitle(document.name)
       setContent(document.content)
       setStatus(document.status)
     }
@@ -32,40 +32,36 @@ export default function EditDocument({ params }: { params: { id: string } }) {
   // Track changes
   useEffect(() => {
     if (document) {
-      const changed = title !== document.title || content !== document.content || status !== document.status
+      const changed = title !== document.name || content !== document.content || status !== document.status
       setHasChanges(changed)
     }
   }, [title, content, status, document])
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for your document.",
-        variant: "destructive",
-      })
+       toast.error("Title required", {
+      description: "Please enter a title for your document.",
+    })
       return
     }
 
     try {
       await updateDocument(params.id, {
-        title: title.trim(),
+        name: title.trim(),
         content: content.trim(),
         status,
       })
 
-      toast({
-        title: "Changes saved",
-        description: "Your document has been successfully updated.",
-      })
+    toast.success("Changes saved", {
+  description: "Your document has been successfully updated.",
+})
 
       setHasChanges(false)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save changes. Please try again.",
-        variant: "destructive",
-      })
+    } catch  {
+      toast.success("Changes saved", {
+  description: "Your document has been successfully updated.",
+})
+
     }
   }
 

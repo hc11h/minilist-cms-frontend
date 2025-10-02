@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 
 export interface Document {
   id: string
-  title: string
+  name: string
   content: string
   status: "draft" | "published"
   createdAt: string
@@ -77,7 +77,11 @@ export function useDocuments() {
       try {
         setIsLoading(true)
         const data = await api.getDocuments()
-        setDocuments(data)
+         const mappedDocuments = data.map(doc => ({
+          ...doc,
+          title: doc.name || "Untitled",
+        }))
+        setDocuments(mappedDocuments)
         setError(null)
       } catch (err) {
         setError(err as Error)
