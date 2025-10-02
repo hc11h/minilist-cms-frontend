@@ -7,15 +7,9 @@ export default function GoogleAuthSuccess() {
   const router = useRouter();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
 
-    if (token) {
-      sessionStorage.setItem("authToken", token);
-      router.replace("/dashboard");
-    } else {
-      router.replace("/login");
-    }
+    router.replace("/dashboard");
+
   }, [router]);
 
   return (

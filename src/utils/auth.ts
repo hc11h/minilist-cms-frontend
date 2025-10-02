@@ -5,6 +5,7 @@ export const getCurrentUser = async () => {
   
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include'
     });
   
     if (!res.ok) return null;
