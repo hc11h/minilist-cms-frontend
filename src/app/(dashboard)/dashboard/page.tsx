@@ -27,15 +27,12 @@ export default function DashboardPage() {
     async function fetchUser() {
       try {
         const currentUser = await getCurrentUser();
-        if (!currentUser) {
-          router.push("/login");
-        } else {
+        if (currentUser) {
           setUser(currentUser);
         }
       } catch (err) {
         console.error("Authentication error:", err);
         setError("Failed to authenticate. Please try again.");
-        router.push("/login");
       } finally {
         setLoading(false);
       }
