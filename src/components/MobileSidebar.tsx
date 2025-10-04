@@ -14,6 +14,7 @@ import {
   KeyIcon,
   MenuIcon,
   LogOutIcon,
+  DocumentIcon,
 } from '@/components/icons';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -43,6 +44,11 @@ const navigation = [
     href: '/api-keys',
     icon: KeyIcon,
   },
+  {
+    name: 'Docs',
+    href: '/docs',
+    icon: DocumentIcon,
+  },
 ];
 
 export function MobileSidebar() {
@@ -65,7 +71,8 @@ export function MobileSidebar() {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
+
+      <SheetContent side="left" className="w-64 p-0 overflow-hidden">
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center border-b border-border px-6">
@@ -78,7 +85,7 @@ export function MobileSidebar() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               const Icon = item.icon;
@@ -92,7 +99,7 @@ export function MobileSidebar() {
                     'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isActive
                       ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   )}
                 >
                   <Icon className="h-5 w-5" />
