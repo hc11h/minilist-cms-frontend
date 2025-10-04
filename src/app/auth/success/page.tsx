@@ -12,9 +12,10 @@ export default function GoogleAuthSuccess() {
       try {
         setIsRedirecting(true); 
         
-        const response = await fetch('/api/auth/me', {
-          credentials: 'include', 
-        });
+       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+  credentials: 'include',
+});
+
         
         if (response.ok) {
        
