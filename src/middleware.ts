@@ -7,19 +7,25 @@ export function middleware(request: NextRequest) {
   const publicPaths = ['/login', '/auth/success', '/', '/api/auth/google', '/api/auth/me'];
   const isPublicPath = publicPaths.includes(path);
 
+  // Debug logging
+  console.log('Middleware:', { 
+    path, 
+    hasToken: !!token, 
+    tokenPreview: token ? token.substring(0, 10) + '...' : 'none',
+    isPublicPath 
+  });
 
+  // Always allow auth/success page
   if (path === '/auth/success') {
     return NextResponse.next();
   }
 
+  // For protected routes, check if token exists
   if (!isPublicPath) {
     if (!token) {
-     
-      const response = NextResponse.redirect(new URL("/login", request.url));
-      response.cookies.delete("authToken");
-      return response;
+      console.log('No token found, redirecting to login');
+      return NextResponse.redirect(new URL("/login", request.url));
     }
-    
   }
 
   return NextResponse.next();

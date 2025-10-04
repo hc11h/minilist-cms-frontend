@@ -20,11 +20,19 @@ export const getToken = (): string | null => {
 export const setToken = (token: string): void => {
   if (typeof window === 'undefined') return;
   
-
+  // Store in sessionStorage
   sessionStorage.setItem('authToken', token);
   
-
-  document.cookie = `authToken=${token}; path=/; max-age=86400; secure; samesite=strict`;
+  // Set cookie with proper production settings
+  // Remove 'secure' flag for HTTP in development, add it for HTTPS in production
+  const isProduction = window.location.protocol === 'https:';
+  const cookieOptions = isProduction 
+    ? `authToken=${token}; path=/; max-age=86400; secure; samesite=strict`
+    : `authToken=${token}; path=/; max-age=86400; samesite=lax`;
+  
+  document.cookie = cookieOptions;
+  
+  console.log('Token set:', { token: token.substring(0, 10) + '...', isProduction });
 };
 
 
