@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboardIcon, FileTextIcon, BookOpenIcon, UsersIcon, KeyIcon } from "@/components/icons"
+import { LayoutDashboardIcon, FileTextIcon, BookOpenIcon, UsersIcon, KeyIcon, DocumentIcon, LogOutIcon } from "@/components/icons"
+import { useAuth } from "@/hooks/useAuth"
 
 const navigation = [
   {
@@ -31,10 +32,16 @@ const navigation = [
     href: "/api-keys",
     icon: KeyIcon,
   },
+  {
+    name: 'Docs',
+    href: '/docs',
+    icon: DocumentIcon
+  }
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { user, logout } = useAuth(false);
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-background">
@@ -75,16 +82,39 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="border-t border-border p-4">
-          <div className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <span className="text-xs font-semibold">AD</span>
+          {/* User Info */}
+          {user && (
+            <div className="mb-4">
+              <div className="flex items-center gap-3 rounded-lg bg-muted p-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <span className="text-sm font-semibold">
+                    {user.name?.[0]?.toUpperCase() ||
+                      user.email?.[0]?.toUpperCase() ||
+                      'U'}
+                  </span>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-sm font-medium">
+                    {user.name || 'User'}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium">Admin User</p>
-              <p className="truncate text-xs text-muted-foreground">admin@minilist.com</p>
-            </div>
-          </div>
+          )}
+
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 w-full text-sm font-medium transition-colors text-destructive hover:underline"
+          >
+            <LogOutIcon className="h-4 w-4" />
+            Logout
+          </button>
         </div>
+v
       </div>
     </aside>
   )

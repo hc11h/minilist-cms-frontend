@@ -1,4 +1,14 @@
-import { getToken } from "@/utils/auth";
+const getToken = (): string | null => {
+  if (typeof document === 'undefined') return null;
+
+  const cookieToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('authToken='))
+    ?.split('=')[1];
+
+  return sessionStorage.getItem('authToken') || cookieToken || null;
+};
+
 
 export function getAuthHeaders(extraHeaders: HeadersInit = {}): HeadersInit {
   const token = getToken();

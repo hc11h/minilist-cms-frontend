@@ -78,7 +78,7 @@ export default function EditAuthorPage() {
       })
 
       router.push("/authors")
-    } catch (error) {
+    } catch {
       toast.error("Failed to update author", {
         description: "Please try again later.",
       })
