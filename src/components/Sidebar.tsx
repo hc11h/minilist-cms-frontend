@@ -83,28 +83,38 @@ export function Sidebar({ isOpen, onToggle }: { isOpen: boolean; onToggle: () =>
           })}
         </nav>
 
-        {/* Footer */}
+       
         <div className="border-t border-border p-4">
           {/* User Info */}
-          {isOpen && user && (
+          {user && (
             <div className="mb-4">
-              <div className="flex items-center gap-3 rounded-lg bg-muted p-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <span className="text-sm font-semibold">
-                    {user.name?.[0]?.toUpperCase() ||
-                      user.email?.[0]?.toUpperCase() ||
-                      'U'}
-                  </span>
+              {isOpen ? (
+                // Expanded layout
+                <div className="flex items-center gap-3 rounded-lg bg-muted p-3 hover:bg-muted/80 transition-colors">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <span className="text-sm font-semibold">
+                      {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="truncate text-sm font-medium">
+                      {user.name || 'User'}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 overflow-hidden">
-                  <p className="truncate text-sm font-medium">
-                    {user.name || 'User'}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {user.email}
-                  </p>
+              ) : (
+                // Collapsed layout
+                <div className="flex justify-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                    <span className="text-sm font-semibold">
+                      {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -112,9 +122,9 @@ export function Sidebar({ isOpen, onToggle }: { isOpen: boolean; onToggle: () =>
           <button
             onClick={logout}
             className={cn(
-              'flex items-center gap-2 w-full text-sm font-medium transition-colors',
+              'flex items-center gap-2 w-full text-sm font-medium transition-colors rounded-md px-3 py-2 hover:bg-destructive/10 hover:text-destructive',
               isOpen
-                ? 'text-destructive hover:underline'
+                ? 'text-destructive'
                 : 'text-muted-foreground hover:text-destructive justify-center'
             )}
           >
