@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboardIcon, FileTextIcon, BookOpenIcon, UsersIcon, KeyIcon, HomeIcon } from "@/components/icons"
+import { LayoutDashboardIcon, FileTextIcon, BookOpenIcon, UsersIcon, KeyIcon } from "@/components/icons"
 
 const navigation = [
   {
