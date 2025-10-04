@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 interface User {
   email: string;
+  name?: string;
+  image?:string;
 }
 
 export function useAuth(redirectIfUnauthenticated = true) {

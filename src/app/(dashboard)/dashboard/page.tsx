@@ -1,130 +1,225 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthTest } from "@/components/AuthTest";
 import { useAuth } from "@/hooks/useAuth";
 
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-  image?: string;
-  lastLogin?: string;
+interface DashboardMetrics {
+  loginMetrics: {
+    loginCount: number;
+    lastLogin: string;
+  };
+  editorMetrics: {
+    totalEditorBlogs: number;
+    publishedEditorBlogs: number;
+    draftEditorBlogs: number;
+  };
+  authorMetrics: {
+    totalAuthoredBlogs: number;
+    publishedAuthoredBlogs: number;
+    draftAuthoredBlogs: number;
+  };
 }
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuth(true);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (loading) {
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/dashboard/metrics`, {
+          credentials: 'include',
+        });
+
+        if (res.status === 401) {
+          router.push('/auth/signin');
+          return;
+        }
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData?.message || 'Failed to fetch metrics');
+        }
+
+        const data = await res.json();
+        setMetrics(data);
+      } catch (err: any) {
+        setError(err.message || 'An unexpected error occurred');
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchMetrics();
+    }
+  }, [user, router]);
+
+  if (loading || metricsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!user) {
-    // The hook will redirect if unauthenticated, so this state is rare
-    return null;
+    return null; // The hook will redirect if unauthenticated
   }
 
- 
-
-
-  if (loading) {
+  if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+          <h2 className="text-lg font-medium text-destructive">Error</h2>
+          <p className="mt-2 text-destructive/80">{error}</p>
+        </div>
       </div>
     );
   }
 
-
- 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
-     
-      <div className="mb-6">
-        <AuthTest />
-      </div>
-      
       {/* Header with user info */}
-      {/* <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-foreground">
             Welcome, {user?.name || user?.email}!
           </h1>
-          <p className="mt-1 text-gray-600">Here’s your CMS dashboard</p>
+          <p className="mt-1 text-muted-foreground">Here's your CMS dashboard</p>
         </div>
         {user?.image && (
           <div className="flex-shrink-0">
-            <img 
-              className="h-12 w-12 rounded-full border-2 border-gray-200" 
-              src={user.image} 
-              alt={user.name || "User avatar"} 
+            <img
+              className="h-12 w-12 rounded-full border-2 border-border"
+              src={user.image}
+              alt={user.name || "User avatar"}
             />
           </div>
         )}
-      </div> */}
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard
-          title="Content"
-          value="24"
+        <MetricCard
+          title="Total Blogs"
+          value={metrics?.editorMetrics.totalEditorBlogs || 0}
           icon={
-            <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           }
-          bgColor="bg-blue-100"
-          iconColor="text-blue-600"
+          bgColor="bg-primary/10"
+          iconColor="text-primary"
         />
-        <StatCard
-          title="API Keys"
-          value="3"
+        <MetricCard
+          title="Published Blogs"
+          value={metrics?.editorMetrics.publishedEditorBlogs || 0}
           icon={
-            <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           }
-          bgColor="bg-green-100"
-          iconColor="text-green-600"
+          bgColor="bg-green-100 dark:bg-green-900/30"
+          iconColor="text-green-600 dark:text-green-400"
         />
-        <StatCard
-          title="Users"
-          value="8"
+        <MetricCard
+          title="Draft Blogs"
+          value={metrics?.editorMetrics.draftEditorBlogs || 0}
           icon={
-            <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           }
-          bgColor="bg-purple-100"
-          iconColor="text-purple-600"
+          bgColor="bg-amber-100 dark:bg-amber-900/30"
+          iconColor="text-amber-600 dark:text-amber-400"
         />
-        <StatCard
-          title="Views"
-          value="1.2k"
+        <MetricCard
+          title="Authored Blogs"
+          value={metrics?.authorMetrics.totalAuthoredBlogs || 0}
           icon={
-            <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           }
-          bgColor="bg-yellow-100"
-          iconColor="text-yellow-600"
+          bgColor="bg-purple-100 dark:bg-purple-900/30"
+          iconColor="text-purple-600 dark:text-purple-400"
         />
       </div>
 
-      {/* Recent Activity */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-5 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+      {/* Login Metrics */}
+      <div className="grid grid-cols-1 gap-6 mb-8 lg:grid-cols-2">
+        <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+          <div className="px-6 py-5 border-b border-border">
+            <h2 className="text-lg font-medium text-foreground">Login Activity</h2>
+          </div>
+          <div className="px-6 py-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Logins</p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">
+                  {metrics?.loginMetrics.loginCount || 0}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Last Login</p>
+                <p className="mt-1 text-sm text-foreground">
+                  {metrics?.loginMetrics.lastLogin ? formatDate(metrics.loginMetrics.lastLogin) : 'N/A'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="divide-y divide-gray-200">
+
+        <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+          <div className="px-6 py-5 border-b border-border">
+            <h2 className="text-lg font-medium text-foreground">Content Overview</h2>
+          </div>
+          <div className="px-6 py-5">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Published Content</p>
+                <p className="text-lg font-semibold text-foreground">
+                  {(metrics?.editorMetrics.publishedEditorBlogs || 0) + (metrics?.authorMetrics.publishedAuthoredBlogs || 0)}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Draft Content</p>
+                <p className="text-lg font-semibold text-foreground">
+                  {(metrics?.editorMetrics.draftEditorBlogs || 0) + (metrics?.authorMetrics.draftAuthoredBlogs || 0)}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Total Content</p>
+                <p className="text-lg font-semibold text-foreground">
+                  {(metrics?.editorMetrics.totalEditorBlogs || 0) + (metrics?.authorMetrics.totalAuthoredBlogs || 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+        <div className="px-6 py-5 border-b border-border">
+          <h2 className="text-lg font-medium text-foreground">Recent Activity</h2>
+        </div>
+        <div className="divide-y divide-border">
           {[
             { action: "New content created", item: "Home Page", time: "2h ago" },
             { action: "API key regenerated", item: "Web App", time: "1d ago" },
@@ -132,16 +227,16 @@ export default function DashboardPage() {
           ].map((activity, index) => (
             <div key={index} className="px-6 py-4 flex items-start">
               <div className="flex-shrink-0">
-                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
               </div>
               <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                <p className="text-sm text-gray-500">{activity.item}</p>
-                <p className="mt-1 text-xs text-gray-400">{activity.time}</p>
+                <p className="text-sm font-medium text-foreground">{activity.action}</p>
+                <p className="text-sm text-muted-foreground">{activity.item}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{activity.time}</p>
               </div>
             </div>
           ))}
@@ -151,23 +246,24 @@ export default function DashboardPage() {
   );
 }
 
-
-const StatCard = ({ title, value, icon, bgColor, iconColor }: {
+const MetricCard = ({ title, value, icon, bgColor, iconColor }: {
   title: string;
-  value: string;
+  value: number;
   icon: React.ReactNode;
   bgColor: string;
   iconColor: string;
 }) => (
-  <div className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow">
+  <div className={`bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all ${bgColor}`}>
     <div className="px-4 py-5 sm:p-6">
       <div className="flex items-center">
-        <div className={`flex-shrink-0 ${bgColor} rounded-md p-3`}>
-          {icon}
+        <div className="flex-shrink-0 rounded-md p-3">
+          <div className={iconColor}>
+            {icon}
+          </div>
         </div>
         <div className="ml-4">
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">{title}</h3>
-          <p className="mt-1 text-2xl font-semibold text-gray-900">{value}</p>
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{title}</h3>
+          <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
         </div>
       </div>
     </div>
