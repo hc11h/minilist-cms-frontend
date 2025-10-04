@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { setToken } from "@/utils/auth";
 
 export default function GoogleAuthSuccess() {
   const router = useRouter();
@@ -12,20 +13,37 @@ export default function GoogleAuthSuccess() {
       try {
         setIsRedirecting(true); 
         
-       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
-  credentials: 'include',
-});
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
         
+        if (token) {
+          
+          setToken(token);
+        }
+        
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
         if (response.ok) {
-       
+          const userData = await response.json();
+          console.log('Authentication successful:', userData);
           router.replace("/dashboard");
         } else {
+          console.error('Authentication failed:', response.status, response.statusText);
           setIsRedirecting(false);
+
+          router.replace("/login");
         }
       } catch (error) {
         console.error("Authentication check failed:", error);
         setIsRedirecting(false);
+        router.replace("/login");
       }
     };
 

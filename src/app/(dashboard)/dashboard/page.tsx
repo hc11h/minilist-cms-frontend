@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/utils/auth";
+import { AuthTest } from "@/components/AuthTest";
 
 interface User {
   id: string;
@@ -70,6 +71,11 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
+     
+      <div className="mb-6">
+        <AuthTest />
+      </div>
+      
       {/* Header with user info */}
       <div className="mb-8 flex items-center justify-between">
         <div>
