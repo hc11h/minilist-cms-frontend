@@ -47,8 +47,8 @@ export default function DashboardPage() {
 
         const data = await res.json();
         setMetrics(data);
-      } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred');
+      } catch  {
+        setError('An unexpected error occurred');
       } finally {
         setMetricsLoading(false);
       }

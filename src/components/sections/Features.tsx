@@ -1,4 +1,4 @@
-import { Zap, Lock, Boxes, Code, ArrowUpRight, CheckCircle2, Shield, Database } from "lucide-react"
+import { Zap, CheckCircle2, Shield, Database } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 
 export function Features() {

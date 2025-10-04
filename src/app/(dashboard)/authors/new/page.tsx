@@ -63,7 +63,7 @@ export default function NewAuthorPage() {
       })
 
       router.push("/authors")
-    } catch (error) {
+    } catch {
       toast.error("Failed to create author", {
         description: "Please try again later.",
       })
