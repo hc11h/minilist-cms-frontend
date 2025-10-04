@@ -6,7 +6,7 @@ export async function GET() {
   const cookie = headersList.get("cookie");
   const authorization = headersList.get("authorization");
   
-  // Check for token in Authorization header first
+
   if (authorization && authorization.startsWith("Bearer ")) {
     const token = authorization.substring(7);
     if (token) {
@@ -14,7 +14,7 @@ export async function GET() {
     }
   }
   
-  // Fallback to cookie check
+
   if (cookie && cookie.includes("authToken")) {
     const authTokenMatch = cookie.match(/authToken=([^;]+)/);
     if (authTokenMatch && authTokenMatch[1]) {

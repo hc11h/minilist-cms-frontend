@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser } from "@/utils/auth";
 import { AuthTest } from "@/components/AuthTest";
+import { useAuth } from "@/hooks/useAuth";
 
 interface User {
   id: string;
@@ -15,32 +15,22 @@ interface User {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef(false);
+  const { user, loading } = useAuth(true);
 
-  useEffect(() => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+  if (!user) {
+    // The hook will redirect if unauthenticated, so this state is rare
+    return null;
+  }
 
-    async function fetchUser() {
-      try {
-        const currentUser = await getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser);
-        }
-      } catch (err) {
-        console.error("Authentication error:", err);
-        setError("Failed to authenticate. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [router]);
+ 
 
 
   if (loading) {
@@ -52,22 +42,7 @@ export default function DashboardPage() {
   }
 
 
-  if (error) {
-    return (
-      <div className="max-w-6xl mx-auto mt-20 text-center">
-        <div className="bg-red-50 text-red-700 p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">Authentication Error</h2>
-          <p>{error}</p>
-          <button 
-            onClick={() => router.push("/login")}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -77,7 +52,7 @@ export default function DashboardPage() {
       </div>
       
       {/* Header with user info */}
-      <div className="mb-8 flex items-center justify-between">
+      {/* <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             Welcome, {user?.name || user?.email}!
@@ -93,7 +68,7 @@ export default function DashboardPage() {
             />
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
