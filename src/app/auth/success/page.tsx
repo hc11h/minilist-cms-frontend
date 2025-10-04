@@ -8,20 +8,29 @@ export default function GoogleAuthSuccess() {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-  const checkCookie = () => {
-    const cookies = document.cookie;
-    console.log("Current cookies:", cookies);
-    console.log("authToken present:", cookies.includes("authToken"));
-  };
-  
-  checkCookie();
-  const timer = setTimeout(() => {
-    checkCookie();
-    router.replace("/dashboard");
-  }, 500);
+    const checkAuthentication = async () => {
+      try {
+        setIsRedirecting(true); 
+        
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include', 
+        });
+        
+        if (response.ok) {
+       
+          router.replace("/dashboard");
+        } else {
+          setIsRedirecting(false);
+        }
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+        setIsRedirecting(false);
+      }
+    };
 
-  return () => clearTimeout(timer);
-}, [router]);
+    const timer = setTimeout(checkAuthentication, 1000);
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
     <div className="flex items-center justify-center h-screen">
