@@ -84,7 +84,7 @@ export function Sidebar() {
         <div className="border-t border-border p-4">
           {/* User Info */}
           {user && (
-            <div className="mb-4">
+            <div className="mb-4 px-2">
               <div className="flex items-center gap-3 rounded-lg bg-muted p-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <span className="text-sm font-semibold">
@@ -106,15 +106,16 @@ export function Sidebar() {
           )}
 
           {/* Logout Button */}
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 w-full text-sm font-medium transition-colors text-destructive hover:underline"
-          >
-            <LogOutIcon className="h-4 w-4" />
-            Logout
-          </button>
+          <div className="space-y-1 px-12">
+            <button
+              onClick={logout}
+              className="flex w-full items-center gap-2 text-sm font-medium text-destructive transition-colors hover:underline"
+            >
+              <LogOutIcon className="h-4 w-4" />
+              Logout
+            </button>
+          </div>
         </div>
-v
       </div>
     </aside>
   )

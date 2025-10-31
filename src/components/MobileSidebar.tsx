@@ -55,7 +55,7 @@ export function MobileSidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth(false); // don't redirect if unauthenticated (UI-only)
+  const { user, logout } = useAuth(false);
 
   const handleLogout = async () => {
     await logout();

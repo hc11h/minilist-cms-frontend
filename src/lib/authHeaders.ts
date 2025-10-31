@@ -17,7 +17,6 @@ export function getAuthHeaders(extraHeaders: HeadersInit = {}): HeadersInit {
     "Content-Type": "application/json",
   };
 
-  // Handle different types of extraHeaders
   if (extraHeaders instanceof Headers) {
     extraHeaders.forEach((value, key) => {
       headers[key] = value;
