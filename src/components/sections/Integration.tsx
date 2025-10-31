@@ -1,4 +1,3 @@
-// src/components/sections/Integration.tsx
 import { Card, CardContent } from "@/components/ui/card"
 
 export function Integration() {

@@ -90,25 +90,6 @@ export default function ApiDocsPage() {
                   <section>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
                       <h3 className="text-lg font-semibold">GET /dev/blogs</h3>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => downloadCurlExample("/dev/blogs")}>
-                          <Download className="h-4 w-4 mr-1" />
-                          Download cURL
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              `curl -X GET "${apiBaseUrl}/dev/blogs" \\ -H "Authorization: Bearer YOUR_API_KEY" \\ -H "Content-Type: application/json"`,
-                              "list"
-                            )
-                          }
-                        >
-                          <CopyIcon className="h-4 w-4 mr-1" />
-                          Copy cURL
-                        </Button>
-                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
                       Get a paginated list of blogs.
@@ -150,24 +131,33 @@ Content-Type: application/json`}
                             {`{
   "data": [
     {
-      "id": "uuid",
-      "title": "Blog Title",
-      "slug": "blog-title",
-      "content": "...",
-      "published": true,
-      "createdAt": "...",
-      "updatedAt": "..."
+      "id": "string (unique identifier, UUID)",
+      "title": "string (blog title)",
+      "slug": "string (URL-friendly slug)",
+      "editorId": "string (UUID of the editor)",
+      "blogAuthorId": "string (UUID of the blog author)",
+      "status": "string (e.g., 'DRAFT', 'PUBLIC', 'PRIVATE')",
+      "seoTitle": "string (SEO title)",
+      "seoDescription": "string (SEO description)",
+      "seoKeywords": "string (comma-separated keywords)",
+      "publishedAt": "datetime | null (ISO 8601 format, when published)",
+      "scheduledAt": "datetime | null (scheduled publish time, if any)",
+      "createdAt": "datetime (ISO 8601 format, when created)",
+      "updatedAt": "datetime (ISO 8601 format, last updated time)",
+      "isDeleted": "boolean (true or false)",
+      "deletedAt": "datetime | null (when deleted, if applicable)"
     }
   ],
   "meta": {
-    "page": 1,
-    "limit": 10,
-    "total": 25
+    "page": "number (current page number)",
+    "limit": "number (items per page)",
+    "total": "number (total items available)"
   }
 }`}
                           </pre>
                         </div>
                       </div>
+
                     </div>
                   </section>
                 </TabsContent>
@@ -176,29 +166,6 @@ Content-Type: application/json`}
                   <section>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
                       <h3 className="text-lg font-semibold">GET /dev/blogs/:id</h3>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => downloadCurlExample("/dev/blogs/:id")}
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Download cURL
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              `curl -X GET "${apiBaseUrl}/dev/blogs/{id}" \\ -H "Authorization: Bearer YOUR_API_KEY" \\ -H "Content-Type: application/json"`,
-                              "single"
-                            )
-                          }
-                        >
-                          <CopyIcon className="h-4 w-4 mr-1" />
-                          Copy cURL
-                        </Button>
-                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
                       Get a specific blog by ID.
@@ -227,16 +194,26 @@ Content-Type: application/json`}
                         <div className="bg-muted/50 p-2 rounded-md font-mono text-sm overflow-x-auto">
                           <pre>
                             {`{
-  "id": "uuid",
-  "title": "Blog Title",
-  "slug": "blog-title",
-  "content": "...",
-  "published": true,
-  "createdAt": "...",
-  "updatedAt": "..."
+  "id": "string (unique identifier, UUID)",
+  "title": "string (blog title)",
+  "slug": "string (URL-friendly slug)",
+  "editorId": "string (UUID of the editor)",
+  "blogAuthorId": "string (UUID of the blog author)",
+  "status": "string (e.g., 'DRAFT', 'PUBLIC', 'PRIVATE')",
+  "seoTitle": "string (SEO title)",
+  "seoDescription": "string (SEO description)",
+  "seoKeywords": "string (comma-separated keywords)",
+  "publishedAt": "datetime (ISO 8601 format, when published)",
+  "scheduledAt": "datetime | null (scheduled publish time, if any)",
+  "createdAt": "datetime (ISO 8601 format, when created)",
+  "updatedAt": "datetime (ISO 8601 format, last updated time)",
+  "isDeleted": "boolean (true or false)",
+  "deletedAt": "datetime | null (when deleted, if applicable)"
 }`}
                           </pre>
                         </div>
+
+
                       </div>
                     </div>
                   </section>
@@ -246,6 +223,6 @@ Content-Type: application/json`}
           </Card>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

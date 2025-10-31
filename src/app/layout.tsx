@@ -24,7 +24,6 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "Minilist CMS - Headless Content Management",
   description: "Simple, powerful headless CMS with an API-first approach",
-  generator: "v0.app",
 }
 
 
